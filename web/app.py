@@ -18,6 +18,14 @@ API(供前端 JS 调用):
 GIF/image URL 用上游 GitHub raw CDN,本地不存媒体。
 """
 from __future__ import annotations
+# Debug:在 import 之前写日志,看 binary 是否真的开始执行 app.py
+import os as _dbg_os
+_dbg_path = (_dbg_os.path.expanduser('~/.ritual-debug.log'))
+try:
+    with open(_dbg_path, 'a') as _f:
+        _f.write(f"[{_dbg_os.environ.get('_RITUAL_TS', '0')}] top of app.py reached\n")
+except Exception:
+    pass
 
 import hashlib
 import json as _json
@@ -46,8 +54,40 @@ if not _sys.stderr or _sys.stderr.fileno() < 0:
     _log_dir.mkdir(parents=True, exist_ok=True)
     _sys.stderr = open(_log_dir / "ritual.err", "a", buffering=1)
 
-from cli import finder
-from cli import coach
+# PyInstaller onedir 经常把空 __init__.py 的 package 收集错,导致 from cli import finder 无限递归。
+# 改成 importlib 直接按文件加载,完全绕开 package 机制。
+import importlib.util
+def _load_module_from_path(name: str, path):
+    spec = importlib.util.spec_from_file_location(name, str(path))
+    mod = importlib.util.module_from_spec(spec)
+    _sys.modules[name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+# 探测 cli/ 包位置:开发模式 = 项目根 /cli/,打包模式 = _internal/cli/
+def _find_pkg_dir():
+    candidates = [
+        Path(__file__).resolve().parent.parent / "cli",  # 源码模式
+    ]
+    if hasattr(_sys, '_MEIPASS'):
+        candidates.append(Path(_sys._MEIPASS) / "cli")
+        candidates.append(Path(_sys._MEIPASS) / "cli_pkg")  # --add-data 时被改名
+    for c in candidates:
+        if c.exists() and (c / "__init__.py").exists():
+            return c
+    return None
+
+_pkg = _find_pkg_dir()
+if _pkg:
+    # 把 _pkg 加到 sys.path 第一位,让 `from cli import X` 找得到
+    if str(_pkg.parent) not in _sys.path:
+        _sys.path.insert(0, str(_pkg.parent))
+    finder = _load_module_from_path("cli.finder", _pkg / "finder.py")
+    coach = _load_module_from_path("cli.coach", _pkg / "coach.py")
+else:
+    # 兜底:源码 import
+    from cli import finder  # type: ignore
+    from cli import coach  # type: ignore
 
 from web import db as _db
 
@@ -65,14 +105,35 @@ MEDIA_LOCAL_DIR = STATIC_DIR / "media"  # 本地媒体目录(可选,跑了 downl
 import sys as _sys
 if hasattr(_sys, '_MEIPASS'):
     _bundle = Path(_sys._MEIPASS)
+    # PyInstaller onedir 把 _internal 加到 sys.path,但 cli/ 是空 __init__.py 的 namespace package,
+    # Python 找不到 __init__ 内容,会反复 import。强制把 _bundle 放 sys.path 第一位。
+    if str(_bundle) not in _sys.path:
+        _sys.path.insert(0, str(_bundle))
     TEMPLATES_DIR = _bundle / "web" / "templates"
     STATIC_DIR = _bundle / "web" / "static"
     DEMO_PATH = _bundle / "web" / "data" / "demo.json"
     EXERCISES_JSON = _bundle / "data" / "exercises.json"
+    # PyInstaller onedir 偶尔把 exercises.json 当目录,加 fallback
+    if EXERCISES_JSON.is_dir():
+        EXERCISES_JSON = EXERCISES_JSON / "exercises.json"
     # data/sport.db 仍然写在 exe 旁的 EXE 同目录(可写)
     DATA_DIR = Path(_sys.executable).resolve().parent / "data"
 
 app = FastAPI(title="sport", docs_url=None, redoc_url=None)
+
+# Debug:启动立刻写日志,确认 binary 起来了
+try:
+    _dbg = Path.home() / ".ritual-debug.log"
+    with open(_dbg, "a") as _f:
+        _f.write(f"[{__import__('time').time()}] app.py loaded, EXERCISES_JSON={EXERCISES_JSON}\n")
+        _f.write(f"[{__import__('time').time()}] sys.path={_sys.path[:5]}\n")
+        _f.write(f"[{__import__('time').time()}] cli finder dir={dir(finder)[:200]}\n")
+except Exception as _e:
+    try:
+        with open(Path.home() / ".ritual-debug.log", "a") as _f2:
+            _f2.write(f"DEBUG IMPORT ERR: {_e}\n")
+    except Exception:
+        pass
 
 
 @app.exception_handler(Exception)

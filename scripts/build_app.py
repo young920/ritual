@@ -64,6 +64,9 @@ def build():
         if src_path.exists():
             add_data_args.extend(["--add-data", f"{src}{sep}{dst}"])
 
+    # 关键:web/app.py 用了 `from cli import ...`,PyInstaller 默认不抓 cli 子模块
+    hidden = ["--hidden-import", "cli", "--hidden-import", "cli.finder", "--hidden-import", "cli.coach"]
+
     # macOS 嵌入 .icns 图标
     icns = ROOT / "dist" / "ritual.icns"
     if icns.exists() and system == "darwin":
@@ -85,6 +88,9 @@ def build():
     if ico.exists() and system == "windows":
         cmd.extend(["--icon", str(ico)])
     cmd.extend(add_data_args)
+    cmd.extend(hidden)
+    # 让 PyInstaller 找到 cli/ 目录(spec 路径)
+    cmd.extend(["--paths", str(ROOT)])
     cmd.append("web/app.py")
 
     print("→ 运行:", " ".join(cmd))

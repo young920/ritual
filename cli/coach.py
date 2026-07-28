@@ -25,7 +25,7 @@ from pathlib import Path
 from openai import OpenAI
 import anthropic
 
-from . import finder
+import cli.finder as finder
 
 DEFAULT_DATA = Path(__file__).resolve().parent.parent / "data" / "exercises.json"
 DEFAULT_MODEL = "glm-4.5"

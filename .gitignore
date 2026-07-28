@@ -79,4 +79,4 @@ graphify-out/
 graphify-out/**
 
 # graphify 缓存产物
-graphify-out/cache/
+graphify-out/cache/venv-ritual/
