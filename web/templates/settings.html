@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>sport · 设置</title>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
+</head>
+<body data-page="settings">
+
+<header class="masthead">
+  <a class="masthead__brand" href="/plan">sport</a>
+  <nav class="masthead__nav">
+    <a href="/plan" id="nav-plan">计划</a>
+    <a href="/browse" id="nav-browse">浏览</a>
+    <a href="/generate" id="nav-generate">生成</a>
+    <a href="/settings" id="nav-settings">设置</a>
+  </nav>
+</header>
+
+<section class="settings">
+  <div class="settings__row">
+    <label class="settings__label">API key</label>
+    <input class="settings__input" id="setting-key" type="password"
+           placeholder="sk-..." autocomplete="off">
+  </div>
+  <div class="settings__row">
+    <label class="settings__label">Base URL</label>
+    <input class="settings__input" id="setting-base-url" type="text"
+           placeholder="https://ai.qingxiaoyun.net/v1  (留空 = OpenAI 官方)">
+  </div>
+  <div class="settings__row">
+    <label class="settings__label">Model</label>
+    <input class="settings__input" id="setting-model" type="text"
+           placeholder="glm-5.2 / glm-4.5 / claude-sonnet-5">
+  </div>
+  <div class="settings__row settings__row--meta">
+    存在浏览器 localStorage,不会上传到任何地方。
+  </div>
+  <div class="settings__row settings__row--meta">
+    <a href="#" id="clear-storage">清除所有本地数据</a>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script src="/static/i18n.js?v=57"></script>
+<script src="/static/shared.js?v=57"></script>
+<script src="/static/settings.js?v=57"></script>
+</body>
+</html>

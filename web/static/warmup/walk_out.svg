@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" width="220" height="220">
+  <rect width="220" height="220" fill="#0A0807"/>
+  <g stroke="#F5F2EE" stroke-width="3" fill="none" stroke-linecap="round">
+    <!-- 头 -->
+    <circle cx="110" cy="60" r="18" fill="#F5F2EE"/>
+    <!-- 躯干稍前倾 -->
+    <line x1="110" y1="78" x2="125" y2="130"/>
+    <!-- 髋 -->
+    <line x1="115" y1="135" x2="135" y2="135"/>
+    <!-- 双腿分开撑地 -->
+    <line x1="125" y1="130" x2="90" y2="180"/>
+    <line x1="125" y1="130" x2="160" y2="180"/>
+    <!-- 双臂前伸撑地 -->
+    <line x1="115" y1="90" x2="90" y2="115"/>
+    <line x1="115" y1="90" x2="140" y2="115"/>
+    <line x1="90" y1="115" x2="80" y2="145"/>
+    <line x1="140" y1="115" x2="150" y2="145"/>
+    <!-- 手 -->
+    <circle cx="80" cy="145" r="5" fill="#F5F2EE"/>
+    <circle cx="150" cy="145" r="5" fill="#F5F2EE"/>
+  </g>
+  <text x="110" y="200" text-anchor="middle" fill="#C04A2C" font-size="14" font-family="sans-serif">动态撑地</text>
+</svg>

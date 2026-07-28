@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" width="220" height="220">
+  <rect width="220" height="220" fill="#0A0807"/>
+  <g stroke="#F5F2EE" stroke-width="3" fill="none" stroke-linecap="round">
+    <circle cx="110" cy="56" r="16" fill="#F5F2EE"/>
+    <line x1="110" y1="72" x2="110" y2="170"/>
+    <line x1="95" y1="170" x2="125" y2="170"/>
+    <line x1="100" y1="170" x2="92" y2="208"/>
+    <line x1="120" y1="170" x2="128" y2="208"/>
+    <line x1="110" y1="105" x2="68" y2="130"/>
+    <line x1="110" y1="105" x2="152" y2="130"/>
+    <line x1="68" y1="130" x2="56" y2="148"/>
+    <line x1="152" y1="130" x2="164" y2="148"/>
+    <circle cx="56" cy="148" r="5" fill="#F5F2EE"/>
+    <circle cx="164" cy="148" r="5" fill="#F5F2EE"/>
+  </g>
+  <!-- 两只手绕环 -->
+  <g fill="none" stroke="#C04A2C" stroke-width="3">
+    <circle cx="56" cy="148" r="14" stroke-dasharray="3 3">
+      <animateTransform attributeName="transform" type="rotate"
+        from="0 56 148" to="360 56 148" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="164" cy="148" r="14" stroke-dasharray="3 3">
+      <animateTransform attributeName="transform" type="rotate"
+        from="0 164 148" to="360 164 148" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  <!-- 头部跟随箭头旋转 -->
+  <g fill="#C04A2C">
+    <path d="M 56 134 L 50 142 L 62 142 Z">
+      <animateTransform attributeName="transform" type="rotate"
+        from="0 56 148" to="360 56 148" dur="2.5s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 164 134 L 158 142 L 170 142 Z">
+      <animateTransform attributeName="transform" type="rotate"
+        from="0 164 148" to="360 164 148" dur="2.5s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  <text x="110" y="194" text-anchor="middle" fill="#C04A2C" font-size="14" font-family="sans-serif">手腕活动</text>
+</svg>

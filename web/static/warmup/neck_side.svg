@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" width="220" height="220">
+  <rect width="220" height="220" fill="#0A0807"/>
+  <g stroke="#F5F2EE" stroke-width="3" fill="none" stroke-linecap="round">
+    <!-- 头侧倾 -->
+    <circle cx="118" cy="58" r="16" fill="#F5F2EE" transform="rotate(15 118 58)"/>
+    <!-- 颈斜线 -->
+    <line x1="118" y1="74" x2="110" y2="92"/>
+    <!-- 躯干 -->
+    <line x1="110" y1="92" x2="110" y2="170"/>
+    <!-- 髋 -->
+    <line x1="95" y1="170" x2="125" y2="170"/>
+    <!-- 腿 -->
+    <line x1="100" y1="170" x2="92" y2="208"/>
+    <line x1="120" y1="170" x2="128" y2="208"/>
+    <!-- 一手过头拉 -->
+    <line x1="110" y1="98" x2="138" y2="55"/>
+    <line x1="110" y1="98" x2="80" y2="115"/>
+  </g>
+  <!-- 拉伸箭头 -->
+  <g fill="#C04A2C" stroke="#C04A2C" stroke-width="3">
+    <path d="M 138 55 L 130 64 L 142 64 Z"/>
+  </g>
+  <text x="60" y="195" text-anchor="middle" fill="#C04A2C" font-size="14" font-family="sans-serif">颈侧拉伸</text>
+</svg>

@@ -1,0 +1,40 @@
+{
+  "title": "推 · 拉 · 腿",
+  "summary": "三天分化的训练计划,适合家里有一对哑铃的初学者到中级训练者。",
+  "split": "推 / 拉 / 腿",
+  "days": [
+    {
+      "day": 1,
+      "title": "推日",
+      "summary": "胸、肩、三头一起练。",
+      "exercises": [
+        {"id": "0289", "name": "dumbbell bench press", "target": "pectorals", "equipment": "dumbbell", "sets": 4, "reps": "8-12", "rest_seconds": 90, "reason": "复合动作,胸大肌的主要发力来源,建立胸部的整体力量基础。"},
+        {"id": "0314", "name": "dumbbell incline bench press", "target": "pectorals", "equipment": "dumbbell", "sets": 3, "reps": "8-12", "rest_seconds": 90, "reason": "上斜角度针对胸大肌上束,让胸部发展更立体。"},
+        {"id": "0308", "name": "dumbbell fly", "target": "pectorals", "equipment": "dumbbell", "sets": 3, "reps": "10-12", "rest_seconds": 60, "reason": "孤立动作,在收尾时给胸肌一个深长的拉伸,增加肌肉感受。"},
+        {"id": "0151", "name": "cable bench press", "target": "pectorals", "equipment": "cable", "sets": 3, "reps": "10-12", "rest_seconds": 75, "reason": "钢索提供持续的阻力,让胸肌在整个动作过程中都保持张力。"}
+      ]
+    },
+    {
+      "day": 2,
+      "title": "拉日",
+      "summary": "背、二头、后束三角肌。",
+      "exercises": [
+        {"id": "0017", "name": "assisted pull-up", "target": "lats", "equipment": "leverage machine", "sets": 4, "reps": "6-10", "rest_seconds": 120, "reason": "辅助引体先建立拉力,再过渡到完全自重。"},
+        {"id": "0970", "name": "band assisted pull-up", "target": "lats", "equipment": "band", "sets": 3, "reps": "8-12", "rest_seconds": 90, "reason": "弹力带在动作全程提供可变助力,比机械辅助更顺滑。"},
+        {"id": "0295", "name": "dumbbell clean", "target": "glutes", "equipment": "dumbbell", "sets": 3, "reps": "8-10", "rest_seconds": 90, "reason": "爆发力的髋发力动作,把哑铃从地面带到胸前 rack 位置。"},
+        {"id": "0300", "name": "dumbbell deadlift", "target": "glutes", "equipment": "dumbbell", "sets": 3, "reps": "8-10", "rest_seconds": 90, "reason": "髋铰链模式,练整个后侧链——臀、腿后侧、下背。"}
+      ]
+    },
+    {
+      "day": 3,
+      "title": "腿日",
+      "summary": "股四头、臀、腘绳肌、小腿。",
+      "exercises": [
+        {"id": "1760", "name": "dumbbell goblet squat", "target": "quads", "equipment": "dumbbell", "sets": 4, "reps": "10-15", "rest_seconds": 90, "reason": "前握高脚杯深蹲能教一个直立的躯干,初学者友好。"},
+        {"id": "0291", "name": "dumbbell bench squat", "target": "quads", "equipment": "dumbbell", "sets": 3, "reps": "10-12", "rest_seconds": 90, "reason": "垫高脚跟的深蹲变种,更孤立刺激股四头肌。"},
+        {"id": "0300", "name": "dumbbell deadlift", "target": "glutes", "equipment": "dumbbell", "sets": 3, "reps": "8-10", "rest_seconds": 90, "reason": "髋铰链动作训练后侧链,补足推日和拉日没覆盖的角度。"},
+        {"id": "1489", "name": "sissy squat", "target": "quads", "equipment": "body weight", "sets": 3, "reps": "8-12", "rest_seconds": 60, "reason": "徒手孤立动作,在拉伸位强化股四头肌,作为收尾。"}
+      ]
+    }
+  ]
+}

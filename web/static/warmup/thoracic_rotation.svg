@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" width="220" height="220">
+  <rect width="220" height="220" fill="#0A0807"/>
+  <g stroke="#F5F2EE" stroke-width="3" fill="none" stroke-linecap="round">
+    <circle cx="110" cy="60" r="18" fill="#F5F2EE"/>
+    <path d="M 110 78 Q 130 105 100 130 Q 110 155 110 175" fill="none"/>
+    <line x1="98" y1="175" x2="125" y2="175"/>
+    <line x1="103" y1="175" x2="92" y2="210"/>
+    <line x1="120" y1="175" x2="132" y2="210"/>
+    <line x1="110" y1="92" x2="135" y2="135"/>
+    <line x1="110" y1="92" x2="80" y2="135"/>
+  </g>
+  <!-- S 形弧线旋转:左到右交替 -->
+  <g fill="none" stroke="#C04A2C" stroke-width="4">
+    <path d="M 165 60 A 50 40 0 1 1 60 100">
+      <animate attributeName="opacity"
+        values="0.4; 1; 0.4" dur="2.5s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 60 100 L 70 92 L 64 110 Z" fill="#C04A2C"/>
+  </g>
+  <text x="180" y="200" text-anchor="middle" fill="#C04A2C" font-size="14" font-family="sans-serif">胸椎旋转</text>
+</svg>

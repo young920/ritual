@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" width="220" height="220">
+  <rect width="220" height="220" fill="#0A0807"/>
+  <g stroke="#F5F2EE" stroke-width="3" fill="none" stroke-linecap="round">
+    <!-- 头 -->
+    <circle cx="80" cy="70" r="14" fill="#F5F2EE"/>
+    <!-- 躯干向前弯腰 -->
+    <line x1="80" y1="84" x2="80" y2="170"/>
+    <!-- 双臂抱住对侧肩(抱肩拉伸) -->
+    <line x1="80" y1="100" x2="125" y2="80"/>
+    <line x1="80" y1="100" x2="35" y2="80"/>
+    <!-- 双臂交叉示抱肩 -->
+    <line x1="125" y1="80" x2="98" y2="115"/>
+    <line x1="35" y1="80" x2="62" y2="115"/>
+    <!-- 腿 -->
+    <line x1="80" y1="170" x2="68" y2="210"/>
+    <line x1="80" y1="170" x2="92" y2="210"/>
+  </g>
+  <!-- 拉伸提示线 -->
+  <g fill="none" stroke="#C04A2C" stroke-width="2" stroke-dasharray="3 3">
+    <path d="M 30 80 Q 12 100 30 130"/>
+  </g>
+  <text x="170" y="40" text-anchor="middle" fill="#C04A2C" font-size="14" font-family="sans-serif">背部拉伸</text>
+</svg>

@@ -1,0 +1,82 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+.uv-cache/
+
+# uv
+uv.lock
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# 本地数据 / 用户配置 — 千万不能 commit
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+data/sport.db
+data/sport.db-shm
+data/sport.db-wal
+data/plan_*.db
+data/check_ins_*.db
+web/*.db
+web/*.db-shm
+web/*.db-wal
+
+# API key / 隐私文件
+*.env
+.env
+.env.local
+.env.*.local
+secrets.json
+.local/
+
+# 生成 / 缓存
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 日志 / 临时
+*.log
+*.tmp
+*.bak
+*.swp
+.cache/
+.tmp/
+
+# 下载的媒体(运行时自动从 CDN 加载,不需要入库)
+web/static/media/
+
+# 本地工具配置 — 项目级工具的用户配置,不进版本
+.claude/
+.codex/
+.meta-kim/
+.graphify-out/
+graphify-out/
+graphify-out/**
+
+# graphify 缓存产物
+graphify-out/cache/
