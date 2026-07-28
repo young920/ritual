@@ -34,10 +34,22 @@ from fastapi.staticfiles import StaticFiles
 from openai import APIConnectionError, AuthenticationError
 import anthropic as _anthropic_lib
 
+import sys as _sys, os as _os
+# PyInstaller / macOS 双击 .app 启动时 stdout/stderr 可能未绑定,
+# print 会 BrokenPipeError 导致进程秒退。检测到 fd<0 就重定向到日志文件。
+if not _sys.stdout or _sys.stdout.fileno() < 0:
+    _log_dir = Path.home() / ".ritual"
+    _log_dir.mkdir(parents=True, exist_ok=True)
+    _sys.stdout = open(_log_dir / "ritual.log", "a", buffering=1)
+if not _sys.stderr or _sys.stderr.fileno() < 0:
+    _log_dir = Path.home() / ".ritual"
+    _log_dir.mkdir(parents=True, exist_ok=True)
+    _sys.stderr = open(_log_dir / "ritual.err", "a", buffering=1)
+
 from cli import finder
 from cli import coach
 
-from . import db as _db
+from web import db as _db
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 EXERCISES_JSON = DATA_DIR / "exercises.json"
@@ -48,6 +60,17 @@ DEMO_PATH = WEB_DIR / "data" / "demo.json"
 GIF_BASE_REMOTE = "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/"
 GIF_BASE_CDN = "https://cdn.jsdelivr.net/gh/hasaneyldrm/exercises-dataset@main"
 MEDIA_LOCAL_DIR = STATIC_DIR / "media"  # 本地媒体目录(可选,跑了 download_media.py 才有)
+
+# PyInstaller 单文件适配:静态/模板/数据被打进 bundle,运行时通过 sys._MEIPASS 访问
+import sys as _sys
+if hasattr(_sys, '_MEIPASS'):
+    _bundle = Path(_sys._MEIPASS)
+    TEMPLATES_DIR = _bundle / "web" / "templates"
+    STATIC_DIR = _bundle / "web" / "static"
+    DEMO_PATH = _bundle / "web" / "data" / "demo.json"
+    EXERCISES_JSON = _bundle / "data" / "exercises.json"
+    # data/sport.db 仍然写在 exe 旁的 EXE 同目录(可写)
+    DATA_DIR = Path(_sys.executable).resolve().parent / "data"
 
 app = FastAPI(title="sport", docs_url=None, redoc_url=None)
 
@@ -67,8 +90,19 @@ async def _unhandled_exception(request: Request, exc: Exception):
 
 @app.on_event("startup")
 def _startup_init_db():
-    """启动时初始化 SQLite schema。"""
+    """启动时初始化 SQLite schema + 自动开浏览器(PyInstaller .app 启动用)。"""
     _db.init_schema(_db.get_default_conn())
+    # .app 启动时(launchd,没有 shell)自动开浏览器
+    import threading
+    def _open_browser():
+        import time, subprocess
+        time.sleep(0.5)
+        try:
+            subprocess.Popen(["open", "http://127.0.0.1:8000/generate"],
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except Exception:
+            pass
+    threading.Thread(target=_open_browser, daemon=True).start()
 
 _exercises_cache: list[dict] | None = None
 
