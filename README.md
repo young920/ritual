@@ -59,17 +59,17 @@ Ritual 通过 **OpenAI 兼容协议**或 **Anthropic 协议**调用任何 LLM。
 
 | 协议 | Base URL 格式 | 适用场景 |
 |---|---|---|
-| OpenAI 兼容(推荐) | `https://your-proxy.com/v1` | 大多数中转站(青晓云、PackyCode 等) |
+| OpenAI 兼容(推荐) | `https://your-proxy.com/v1` | 大多数中转站(填你自己的代理地址) |
 | Anthropic 兼容 | `https://your-proxy.com` | Claude Code 本地代理、部分中转站 |
 
 自动判断:Base URL 以 `/v1` 结尾 → OpenAI SDK,否则 → Anthropic SDK。
 
-### 几个常见配置
+### 几个常见配置(填你自己的)
 
 ```text
-# 青晓云 + GLM-5.2(便宜、中文好)
-Base URL: https://ai.qingxiaoyun.net/v1
-Model: glm-5.2
+# OpenAI 兼容代理(填你的代理 URL 和模型名)
+Base URL: https://your-proxy.com/v1
+Model: your-model-name
 
 # Claude Code 本地代理 + Claude
 Base URL: http://127.0.0.1:53682/claudecode

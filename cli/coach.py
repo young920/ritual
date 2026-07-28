@@ -358,8 +358,8 @@ def plan(
     warmup_pool = _find_warmup_cooldown_pool(exercises)
 
     # 自动判断协议走对应 SDK:
-    # - base_url 以 /v1 结尾 → OpenAI 兼容(如 qingxiaoyun 的 OpenAI 端点)
-    # - base_url 不带 /v1   → Anthropic 兼容(如 qingxiaoyun 的 Anthropic 端点、Claude Code 代理)
+    # - base_url 以 /v1 结尾 → OpenAI 兼容
+    # - base_url 不带 /v1   → Anthropic 兼容
     base_url_clean = (base_url or "").rstrip("/")
     if base_url_clean.endswith("/v1"):
         # OpenAI 路径:base_url 保持 /v1,SDK 会拼 /chat/completions

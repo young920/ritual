@@ -1,0 +1,81 @@
+name: Build Ritual Installers
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:  # 也允许手动触发
+
+permissions:
+  contents: write  # 创建 release 需要
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            target: mac
+            artifact: ritual-macos
+          - os: windows-latest
+            target: win
+            artifact: ritual-windows
+          - os: ubuntu-latest
+            target: linux
+            artifact: ritual-linux
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Build with PyInstaller
+        run: |
+          uv run --with pyinstaller python scripts/build_app.py ${{ matrix.target }}
+
+      - name: Package (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          cd dist
+          # Make .app bundle (build_app.py already does this)
+          # Zip it for distribution
+          zip -r ${{ matrix.artifact }}.zip ritual.app
+
+      - name: Package (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          cd dist
+          # zip the exe
+          Compress-Archive -Path ritual.exe -DestinationPath ${{ matrix.artifact }}.zip
+
+      - name: Package (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cd dist
+          chmod +x ritual
+          # AppImage-style tarball
+          tar czf ${{ matrix.artifact }}.tar.gz ritual
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/${{ matrix.artifact }}.*
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/${{ matrix.artifact }}.*
+          generate_release_notes: true
+          fail_on_unmatched_files: false
