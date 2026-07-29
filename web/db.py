@@ -21,6 +21,31 @@ from typing import Iterable
 DB_PATH = Path(__file__).resolve().parent.parent / "data" / "sport.db"
 
 
+def _resolve_db_path() -> Path:
+    """DB 路径解析:
+    1. 环境变量 RITUAL_DB_PATH 优先(测试 / 自定义)
+    2. Electron 打包模式:.app bundle 只读 → 写到 ~/Library/Application Support/Ritual/
+    3. macOS 命令行(launchd / 双击):写到 ~/Library/Application Support/Ritual/(避免权限问题)
+    4. 源码模式:写到项目根 data/sport.db(原行为)
+    """
+    import os as _os
+    import sys as _sys
+    env = _os.environ.get("RITUAL_DB_PATH")
+    if env:
+        p = Path(env)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        return p
+    # 打包模式 / launchd:exe 路径在 .app 内,.app 目录不可写,改用 home
+    if hasattr(_sys, "_MEIPASS") or _os.environ.get("RITUAL_BUNDLED"):
+        p = Path.home() / "Library" / "Application Support" / "Ritual" / "data" / "sport.db"
+        p.parent.mkdir(parents=True, exist_ok=True)
+        return p
+    return DB_PATH
+
+
+DB_PATH = _resolve_db_path()
+
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS plans (
     id          TEXT PRIMARY KEY,

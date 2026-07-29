@@ -59,7 +59,7 @@ function spawnPython() {
 
   pyProc = spawn(py, ['-m', 'web.app'], {
     cwd,
-    env: { ...process.env, PYTHONUNBUFFERED: '1' },
+    env: { ...process.env, PYTHONUNBUFFERED: '1', RITUAL_BUNDLED: '1' },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 
