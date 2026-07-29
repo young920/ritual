@@ -1,0 +1,736 @@
+---
+const nav = [
+  { label: '概览', href: '#hero' },
+  { label: '能力', href: '#capabilities' },
+  { label: '截图', href: '#screenshots' },
+  { label: '为什么', href: '#why' },
+  { label: '下载', href: '#download' },
+];
+const stats = [
+  { value: '1,324', label: '动作库' },
+  { value: '5 秒', label: '生成计划' },
+  { value: '100%', label: '本地运行' },
+  { value: '0', label: '账户/订阅' },
+];
+const capabilities = [
+  {
+    eyebrow: 'AI 编排',
+    title: '自然语言 → 完整计划',
+    body: '告诉 AI 你想练什么,自动编排热身/主训练/冷身,每步带要点。',
+  },
+  {
+    eyebrow: '真人 GIF',
+    title: '1,324 个动作,1,324 段演示',
+    body: '每个动作库里都有人 GIF,训练时自动播放,不用脑补。',
+  },
+  {
+    eyebrow: '沉浸训练',
+    title: '语音引导 + 倒计时 + BGM',
+    body: '全屏训练模式,每步说动作要领,秒数到了自动推进。',
+  },
+];
+const whyItems = [
+  {
+    h: '你说中文,AI 听懂',
+    p: '"练背,只有哑铃" → 一份 4 天的拉力计划,带组数次数要点。',
+  },
+  {
+    h: '编排即动作,而非幻灯片',
+    p: '每一组的离心/向心/顶峰时间都拆开,不是模糊的"快推慢放"。',
+  },
+  {
+    h: '数据不出本机',
+    p: 'API key、训练计划、历史打卡都存 localStorage + 本地 SQLite,不上传任何服务器。',
+  },
+  {
+    h: '没有"再开个订阅"',
+    p: 'Ritual 完全免费,用你自己的 LLM API key(OpenAI 兼容或 Anthropic)。',
+  },
+];
+const steps = [
+  {
+    n: '01',
+    h: '下载双击',
+    p: '从 GitHub Release 拉 dmg → 解压 → 拖进 Applications → 双击启动。',
+  },
+  {
+    n: '02',
+    h: '填一次 API key',
+    p: '设置页填你自己的 base_url + key,以后本地再不上传。',
+  },
+  {
+    n: '03',
+    h: '说一句"想练什么"',
+    p: '生成页一句话意图,可选目标肌/器械,5 秒出完整 N 天计划。',
+  },
+  {
+    n: '04',
+    h: '点开始,跟着做',
+    p: '全屏训练模式:倒计时 + 语音 + GIF + BGM,接电话也不乱。',
+  },
+];
+const faqs = [
+  { q: '必须用 AI 吗?', a: '可以选自带 demo 计划,不用 LLM 也能跑;要走 AI 编排就填你自己的 key。' },
+  { q: '哪些 LLM 能用?', a: 'OpenAI 兼容(DeepSeek、GLM、Qingxiaoyun)+ Anthropic(Claude)。填哪个用哪个。' },
+  { q: '数据存在哪?', a: 'macOS:~/Library/Application Support/Ritual/data/sport.db。前端 localStorage 仅存偏好。' },
+  { q: '有 Windows / Linux 版吗?', a: '当前 macOS 双击 .app;GitHub Actions 自动打 linux .tar.gz 和 macOS .zip。' },
+];
+const lastUpdated = '2026-07-29';
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ritual — 把 AI 编排健身教练装进你自己的 Mac</title>
+    <meta name="description" content="打开 app,说一句想练什么,5 秒生成一份完整的训练计划 — 然后跟着做。Mac .app 双击即用,完全本地运行。" />
+    <link rel="icon" type="image/svg+xml" href="/ritual/favicon.svg" />
+    <meta name="theme-color" content="#f5efe6" />
+    <meta property="og:title" content="Ritual — AI 编排训练计划 + 沉浸式训练模式" />
+    <meta property="og:description" content='把"打开健身 app 选计划"变成"5 秒生成 + 直接开练"。' />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,700;1,500;1,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style is:global>
+      *,*::before,*::after { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: #f5efe6;
+        color: #1a1a1a;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+      .wrap { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+      @media (max-width: 720px) { .wrap { padding: 0 20px; } }
+      a { color: inherit; text-decoration: none; }
+      img, svg { max-width: 100%; display: block; }
+
+      .display {
+        font-family: 'Fraunces', 'Times New Roman', serif;
+        font-weight: 500;
+        font-style: normal;
+        letter-spacing: -0.02em;
+      }
+      .eyebrow {
+        font-family: ui-monospace, 'JetBrains Mono', Menlo, monospace;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #8a7e6e;
+      }
+
+      .nav {
+        position: sticky; top: 0; z-index: 50;
+        background: rgba(245, 239, 230, 0.86);
+        backdrop-filter: saturate(180%) blur(14px);
+        -webkit-backdrop-filter: saturate(180%) blur(14px);
+        border-bottom: 1px solid rgba(26, 26, 26, 0.06);
+      }
+      .nav__inner {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 16px; padding: 14px 0;
+      }
+      .nav__brand {
+        display: flex; align-items: center; gap: 10px; font-weight: 600;
+        font-family: 'Fraunces', serif; font-size: 18px;
+      }
+      .nav__mark { width: 26px; height: 26px; }
+      .nav__links {
+        display: flex; gap: 4px; padding: 4px;
+        background: rgba(26, 26, 26, 0.04);
+        border-radius: 999px;
+      }
+      .nav__link {
+        padding: 6px 14px; border-radius: 999px;
+        font-size: 13px; font-weight: 500; color: #1a1a1a;
+        transition: background 0.15s;
+      }
+      .nav__link:hover { background: rgba(26, 26, 26, 0.06); }
+      .nav__cta {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 9px 18px; border: 1px solid rgba(26, 26, 26, 0.18);
+        border-radius: 999px; font-size: 13px; font-weight: 500;
+        background: transparent;
+      }
+      .nav__cta:hover { background: rgba(26, 26, 26, 0.04); }
+      @media (max-width: 720px) {
+        .nav__links { display: none; }
+        .nav__brand span { display: none; }
+      }
+
+      .hero {
+        display: grid; grid-template-columns: 1.05fr 1fr;
+        gap: 48px; padding: 96px 0 56px; align-items: center;
+      }
+      .hero h1 {
+        font-size: clamp(40px, 6vw, 72px);
+        line-height: 1.04; margin: 12px 0 28px;
+      }
+      .hero__ctas { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+      .btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 14px 22px; border-radius: 999px; font-weight: 600;
+        font-size: 14px; transition: transform 0.12s, background 0.15s;
+      }
+      .btn:hover { transform: translateY(-1px); }
+      .btn--black { background: #1a1a1a; color: #f5efe6; }
+      .btn--black:hover { background: #2a2a2a; }
+      .btn--ghost { background: transparent; color: #1a1a1a; }
+      .btn--ghost:hover { background: rgba(26, 26, 26, 0.05); }
+
+      .hero__art {
+        background: #efe6d8;
+        border-radius: 24px; overflow: hidden;
+        aspect-ratio: 4 / 3;
+        display: grid; place-items: center;
+      }
+
+      .desc-band {
+        display: grid; grid-template-columns: 1.2fr 1fr;
+        gap: 24px; padding: 36px 0;
+        border-top: 1px solid rgba(26, 26, 26, 0.08);
+        border-bottom: 1px solid rgba(26, 26, 26, 0.08);
+      }
+      .desc-band p { font-size: 18px; line-height: 1.55; color: #1a1a1a; margin: 0; }
+      .desc-band strong { font-weight: 600; }
+
+      .stats {
+        display: grid; grid-template-columns: repeat(4, 1fr);
+        gap: 18px; padding: 36px 0 96px;
+      }
+      .stat {
+        border: 1px solid rgba(26, 26, 26, 0.08);
+        border-radius: 16px; padding: 22px 22px 24px;
+        background: rgba(255, 253, 248, 0.6);
+      }
+      .stat__label { font-size: 11px; }
+      .stat__value {
+        font-family: 'Fraunces', serif; font-size: 36px;
+        margin-top: 8px; letter-spacing: -0.02em;
+      }
+      @media (max-width: 720px) {
+        .stats { grid-template-columns: repeat(2, 1fr); }
+      }
+
+      .cta-band {
+        background: #1a1a1a; color: #f5efe6;
+        border-radius: 20px;
+        padding: 32px 36px;
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 24px; margin: 80px 0;
+      }
+      .cta-band p { font-size: 18px; margin: 0; flex: 1; }
+      .cta-band a { background: #f5efe6; color: #1a1a1a; }
+      .cta-band a:hover { background: #ffffff; }
+
+      .section-head {
+        display: flex; align-items: end; justify-content: space-between;
+        gap: 24px; padding: 56px 0 24px;
+      }
+      .section-head h2 {
+        font-size: clamp(28px, 4vw, 44px);
+        line-height: 1.1; margin: 8px 0 0;
+      }
+
+      .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+      .card {
+        border: 1px solid rgba(26, 26, 26, 0.08);
+        border-radius: 16px; padding: 24px;
+        display: flex; flex-direction: column; gap: 14px;
+        background: rgba(255, 253, 248, 0.6);
+      }
+      .card h3 { font-size: 20px; margin: 0; line-height: 1.25; }
+      .card p { margin: 0; color: #4a4540; font-size: 14px; line-height: 1.55; }
+      .card .line {
+        border-top: 1px solid rgba(26, 26, 26, 0.1);
+        margin-top: auto; padding-top: 14px;
+        display: flex; justify-content: space-between;
+        font-family: ui-monospace, monospace;
+        font-size: 11px; letter-spacing: 0.12em;
+        text-transform: uppercase; color: #8a7e6e;
+      }
+      .card .line a:hover { color: #C04A2C; }
+      @media (max-width: 720px) { .cards { grid-template-columns: 1fr; } }
+
+      .shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+      .shot {
+        border-radius: 18px; overflow: hidden;
+        border: 1px solid rgba(26, 26, 26, 0.08);
+        background: #fff;
+      }
+      .shot img { width: 100%; height: auto; display: block; }
+      @media (max-width: 720px) { .shots { grid-template-columns: 1fr; } }
+
+      .why {
+        display: grid; grid-template-columns: 1.05fr 1fr;
+        gap: 56px; padding: 56px 0; align-items: stretch;
+      }
+      .why__text h2 {
+        font-size: clamp(36px, 5vw, 56px); line-height: 1.05;
+        margin: 16px 0 28px;
+      }
+      .why__list { display: flex; flex-direction: column; }
+      .why__row {
+        display: grid; grid-template-columns: 28px 1fr; gap: 14px;
+        padding: 22px 0; border-top: 1px solid rgba(26, 26, 26, 0.1);
+      }
+      .why__row:last-of-type { border-bottom: 1px solid rgba(26, 26, 26, 0.1); }
+      .why__check {
+        width: 22px; height: 22px;
+        border: 1.5px solid rgba(26, 26, 26, 0.4);
+        border-radius: 999px; display: grid; place-items: center;
+        margin-top: 2px;
+      }
+      .why__check::after {
+        content: ''; width: 6px; height: 10px;
+        border-right: 1.5px solid #C04A2C;
+        border-bottom: 1.5px solid #C04A2C;
+        transform: rotate(45deg) translate(-1px, -1px);
+      }
+      .why__row h3 { font-size: 18px; margin: 0 0 4px; }
+      .why__row p { margin: 0; color: #4a4540; font-size: 14px; line-height: 1.55; }
+      .why__photo {
+        background: linear-gradient(135deg, #C04A2C 0%, #8a3a25 100%);
+        border-radius: 24px;
+        aspect-ratio: 4 / 5;
+        position: relative; overflow: hidden;
+      }
+      .why__photo svg { width: 100%; height: 100%; }
+      @media (max-width: 720px) { .why { grid-template-columns: 1fr; gap: 32px; } }
+
+      .steps { border: 1px solid rgba(26, 26, 26, 0.08); border-radius: 20px; background: rgba(255, 253, 248, 0.6); }
+      .step {
+        display: grid; grid-template-columns: 80px 1fr; gap: 24px;
+        padding: 28px 32px;
+      }
+      .step + .step { border-top: 1px solid rgba(26, 26, 26, 0.08); }
+      .step__n { font-family: ui-monospace, monospace; font-size: 13px; color: #8a7e6e; letter-spacing: 0.18em; padding-top: 4px; }
+      .step h3 { font-size: 22px; margin: 0 0 6px; }
+      .step p { margin: 0; color: #4a4540; line-height: 1.55; }
+      @media (max-width: 720px) { .step { grid-template-columns: 1fr; gap: 8px; padding: 22px; } }
+
+      .faq { display: flex; flex-direction: column; gap: 14px; }
+      .faq details {
+        border: 1px solid rgba(26, 26, 26, 0.08); border-radius: 14px;
+        padding: 18px 22px; background: rgba(255, 253, 248, 0.6);
+      }
+      .faq summary {
+        cursor: pointer; font-weight: 600; font-size: 16px;
+        list-style: none;
+        display: flex; justify-content: space-between; align-items: center;
+      }
+      .faq summary::-webkit-details-marker { display: none; }
+      .faq summary::after { content: '+'; font-size: 22px; color: #8a7e6e; transition: transform 0.18s; }
+      .faq details[open] summary::after { content: '−'; }
+      .faq p { color: #4a4540; margin: 14px 0 0; line-height: 1.55; }
+
+      footer {
+        margin-top: 80px; padding: 48px 0 64px;
+        border-top: 1px solid rgba(26, 26, 26, 0.08);
+        display: flex; justify-content: space-between;
+        gap: 24px; flex-wrap: wrap;
+        color: #4a4540; font-size: 13px;
+      }
+      footer a:hover { color: #C04A2C; }
+      footer .links { display: flex; gap: 24px; flex-wrap: wrap; }
+
+      .mono { font-family: ui-monospace, 'JetBrains Mono', Menlo, monospace; }
+      .muted { color: #4a4540; }
+
+      @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+      .hero > * { animation: rise 0.6s ease-out both; }
+      .hero > *:nth-child(2) { animation-delay: 0.08s; }
+    </style>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="wrap nav__inner">
+        <a href="#hero" class="nav__brand">
+          <svg class="nav__mark" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="15" fill="#1a1a1a"/>
+            <text x="16" y="22" text-anchor="middle" font-family="Fraunces, Times New Roman, serif" font-style="italic" font-weight="700" font-size="20" fill="#C04A2C">R</text>
+          </svg>
+          <span>Ritual</span>
+        </a>
+        <nav class="nav__links">
+          {nav.map((n) => <a class="nav__link" href={n.href}>{n.label}</a>)}
+        </nav>
+        <a class="nav__cta" href="https://github.com/young920/ritual" target="_blank" rel="noopener">
+          GitHub ↗
+        </a>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section id="hero" class="hero">
+        <div>
+          <p class="eyebrow">Ritual · 本地 AI 健身教练</p>
+          <h1 class="display">把"打开健身 app 选计划"变成<br/><em style="color:#C04A2C;font-style:italic">5 秒生成 + 直接开练。</em></h1>
+          <div class="hero__ctas">
+            <a class="btn btn--black" href="#download">下载 macOS .app ↓</a>
+            <a class="btn btn--ghost" href="#how">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="7" fill="#1a1a1a"/><polygon points="6,4 10,7 6,10" fill="#f5efe6"/></svg>
+              看看怎么用
+            </a>
+          </div>
+        </div>
+        <div class="hero__art">
+          <svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+            <defs>
+              <pattern id="hatch" patternUnits="userSpaceOnUse" width="4" height="4" patternTransform="rotate(45)">
+                <line x1="0" y1="0" x2="0" y2="4" stroke="#1a1a1a" stroke-width="0.4" opacity="0.55"/>
+              </pattern>
+              <pattern id="hatchLight" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(-30)">
+                <line x1="0" y1="0" x2="0" y2="5" stroke="#1a1a1a" stroke-width="0.25" opacity="0.4"/>
+              </pattern>
+              <pattern id="hatchMid" patternUnits="userSpaceOnUse" width="4" height="4" patternTransform="rotate(45)">
+                <line x1="0" y1="0" x2="0" y2="4" stroke="#1a1a1a" stroke-width="0.35" opacity="0.5"/>
+              </pattern>
+            </defs>
+            <rect width="600" height="450" fill="#efe6d8"/>
+
+            <!-- 左侧:巨型写字板"STRATEGY" -->
+            <g transform="translate(40,140)">
+              <rect x="0" y="0" width="100" height="140" fill="#efe6d8" stroke="#1a1a1a" stroke-width="1.2"/>
+              <rect x="6" y="6" width="88" height="128" fill="url(#hatchLight)" opacity="0.7"/>
+              <text x="50" y="20" text-anchor="middle" font-family="Fraunces, serif" font-style="italic" font-size="11" font-weight="700" fill="#1a1a1a">STRATEGY</text>
+              <!-- 内部草图线条 -->
+              <g stroke="#1a1a1a" stroke-width="0.6" fill="none">
+                <circle cx="30" cy="50" r="12"/>
+                <circle cx="70" cy="50" r="12"/>
+                <line x1="42" y1="50" x2="58" y2="50"/>
+                <line x1="20" y1="80" x2="80" y2="80" stroke-dasharray="2 3"/>
+                <line x1="25" y1="95" x2="75" y2="95"/>
+                <line x1="20" y1="110" x2="55" y2="110"/>
+                <line x1="60" y1="125" x2="80" y2="125"/>
+              </g>
+            </g>
+
+            <!-- 后景:城市建筑剪影(密集) -->
+            <g fill="url(#hatchLight)" stroke="#1a1a1a" stroke-width="0.8">
+              <rect x="155" y="180" width="32" height="180"/>
+              <rect x="190" y="155" width="42" height="205"/>
+              <rect x="235" y="195" width="28" height="165"/>
+              <rect x="266" y="120" width="48" height="240"/>
+              <rect x="316" y="170" width="35" height="190"/>
+              <rect x="354" y="145" width="40" height="215"/>
+              <rect x="397" y="190" width="32" height="170"/>
+              <rect x="432" y="100" width="55" height="260"/>
+              <rect x="490" y="160" width="40" height="200"/>
+              <rect x="533" y="190" width="28" height="170"/>
+            </g>
+            <!-- 建筑窗户(细节) -->
+            <g fill="#efe6d8" stroke="none">
+              <rect x="198" y="170" width="3" height="3"/><rect x="206" y="170" width="3" height="3"/><rect x="214" y="170" width="3" height="3"/><rect x="222" y="170" width="3" height="3"/>
+              <rect x="198" y="180" width="3" height="3"/><rect x="206" y="180" width="3" height="3"/><rect x="214" y="180" width="3" height="3"/><rect x="222" y="180" width="3" height="3"/>
+              <rect x="272" y="140" width="3" height="3"/><rect x="280" y="140" width="3" height="3"/><rect x="288" y="140" width="3" height="3"/><rect x="296" y="140" width="3" height="3"/>
+              <rect x="272" y="155" width="3" height="3"/><rect x="280" y="155" width="3" height="3"/><rect x="288" y="155" width="3" height="3"/><rect x="296" y="155" width="3" height="3"/>
+              <rect x="440" y="120" width="3" height="3"/><rect x="448" y="120" width="3" height="3"/><rect x="456" y="120" width="3" height="3"/><rect x="464" y="120" width="3" height="3"/><rect x="472" y="120" width="3" height="3"/><rect x="480" y="120" width="3" height="3"/>
+              <rect x="440" y="135" width="3" height="3"/><rect x="448" y="135" width="3" height="3"/><rect x="456" y="135" width="3" height="3"/><rect x="464" y="135" width="3" height="3"/><rect x="472" y="135" width="3" height="3"/><rect x="480" y="135" width="3" height="3"/>
+            </g>
+
+            <!-- 右侧:"IDEA"灯泡 -->
+            <g transform="translate(425,170)">
+              <circle cx="0" cy="0" r="22" fill="#efe6d8" stroke="#1a1a1a" stroke-width="1.4"/>
+              <circle cx="0" cy="0" r="22" fill="url(#hatchLight)" opacity="0.7"/>
+              <text x="0" y="4" text-anchor="middle" font-family="Fraunces, serif" font-style="italic" font-size="14" font-weight="700" fill="#1a1a1a">IDEA</text>
+              <!-- 灯泡辐射线 -->
+              <g stroke="#1a1a1a" stroke-width="1" stroke-linecap="round">
+                <line x1="-32" y1="0" x2="-28" y2="0"/>
+                <line x1="28" y1="0" x2="32" y2="0"/>
+                <line x1="0" y1="-32" x2="0" y2="-28"/>
+                <line x1="-22" y1="-22" x2="-19" y2="-19"/>
+                <line x1="22" y1="-22" x2="19" y2="-19"/>
+                <line x1="-22" y1="22" x2="-19" y2="19"/>
+                <line x1="22" y1="22" x2="19" y2="19"/>
+              </g>
+              <text x="40" y="-8" font-family="ui-monospace, monospace" font-size="9" fill="#1a1a1a">+38%</text>
+              <text x="-65" y="20" font-family="ui-monospace, monospace" font-size="9" fill="#1a1a1a">×2.4</text>
+            </g>
+
+            <!-- 飞过的鸟 -->
+            <g stroke="#1a1a1a" stroke-width="0.9" fill="none">
+              <path d="M180 60 Q188 50 196 60 Q204 50 212 60"/>
+              <path d="M260 40 Q266 33 272 40 Q278 33 284 40"/>
+            </g>
+
+            <!-- 远景:树(左右两侧) -->
+            <g stroke="#1a1a1a" stroke-width="0.7" fill="none">
+              <circle cx="158" cy="250" r="28" fill="url(#hatchLight)"/>
+              <line x1="158" y1="278" x2="158" y2="320" stroke-width="1.2"/>
+              <circle cx="510" cy="245" r="32" fill="url(#hatchLight)"/>
+              <line x1="510" y1="277" x2="510" y2="320" stroke-width="1.2"/>
+            </g>
+
+            <!-- 中部:一对小人(站姿) + 桌子 + 笔电 + 咖啡 -->
+            <g transform="translate(305,250)" stroke="#1a1a1a" fill="none">
+              <!-- 桌子 -->
+              <line x1="-90" y1="80" x2="90" y2="80" stroke-width="1.2"/>
+              <line x1="-90" y1="80" x2="-90" y2="115" stroke-width="1"/>
+              <line x1="90" y1="80" x2="90" y2="115" stroke-width="1"/>
+              <!-- 笔电 -->
+              <g transform="translate(20,55)">
+                <rect x="0" y="0" width="50" height="22" fill="url(#hatch)" stroke-width="0.8"/>
+                <rect x="-3" y="22" width="56" height="3" fill="#1a1a1a"/>
+                <line x1="8" y1="6" x2="42" y2="6" stroke-width="0.4"/>
+                <line x1="8" y1="11" x2="38" y2="11" stroke-width="0.4"/>
+              </g>
+              <!-- 咖啡杯 -->
+              <g transform="translate(-55,60)">
+                <rect x="0" y="0" width="14" height="18" rx="1" fill="url(#hatch)" stroke-width="0.8"/>
+                <path d="M14 4 q6 0 6 6 q0 6 -6 6" stroke-width="0.7"/>
+                <line x1="3" y1="-4" x2="3" y2="-1" stroke-width="0.6"/>
+                <line x1="7" y1="-4" x2="7" y2="-1" stroke-width="0.6"/>
+              </g>
+              <!-- 左小人(坐姿) -->
+              <g transform="translate(-20,-10)">
+                <circle cx="0" cy="0" r="9" fill="#efe6d8" stroke-width="1"/>
+                <line x1="-12" y1="6" x2="-18" y2="35" stroke-width="1.1"/>
+                <line x1="0" y1="9" x2="0" y2="55" stroke-width="1.4"/>
+                <line x1="12" y1="6" x2="20" y2="35" stroke-width="1.1"/>
+                <line x1="-5" y1="55" x2="-5" y2="80" stroke-width="1.2"/>
+                <line x1="5" y1="55" x2="5" y2="80" stroke-width="1.2"/>
+              </g>
+              <!-- 右小人(站姿指点) -->
+              <g transform="translate(45,-25)">
+                <circle cx="0" cy="0" r="10" fill="#efe6d8" stroke-width="1"/>
+                <line x1="-15" y1="6" x2="-22" y2="40" stroke-width="1.1"/>
+                <line x1="15" y1="6" x2="25" y2="20" stroke-width="1.1"/>
+                <line x1="25" y1="20" x2="0" y2="20" stroke-width="1.1"/>
+                <line x1="0" y1="10" x2="0" y2="55" stroke-width="1.4"/>
+                <line x1="-7" y1="55" x2="-7" y2="85" stroke-width="1.2"/>
+                <line x1="7" y1="55" x2="7" y2="85" stroke-width="1.2"/>
+              </g>
+            </g>
+
+            <!-- 地面 -->
+            <line x1="20" y1="360" x2="580" y2="360" stroke="#1a1a1a" stroke-width="0.8"/>
+            <line x1="20" y1="365" x2="580" y2="365" stroke="#1a1a1a" stroke-width="0.5" opacity="0.5" stroke-dasharray="2 4"/>
+
+            <!-- 文字标签 -->
+            <g font-family="Fraunces, Times New Roman, serif" font-style="italic" fill="#1a1a1a">
+              <text x="50" y="40" font-size="14" font-weight="700">RITUAL</text>
+              <text x="50" y="56" font-size="10" opacity="0.65" letter-spacing="2">EST. 2026</text>
+            </g>
+            <g font-family="ui-monospace, monospace" fill="#1a1a1a" font-size="9" letter-spacing="0.6">
+              <text x="500" y="40">FIG.01</text>
+              <text x="500" y="52" opacity="0.6">DAILY PRACTICE</text>
+            </g>
+            <g font-family="ui-monospace, monospace" fill="#1a1a1a" font-size="8" letter-spacing="0.4">
+              <text x="50" y="395">SUNDAY · LEG DAY · 60 MIN</text>
+              <text x="50" y="408" opacity="0.6">5 sets × 12 reps · rest 90s</text>
+            </g>
+            <rect x="540" y="30" width="30" height="6" fill="#C04A2C"/>
+            <line x1="540" y1="42" x2="570" y2="42" stroke="#C04A2C" stroke-width="1"/>
+          </svg>
+        </div>
+      </section>
+
+      <section class="desc-band">
+        <p>Ritual 是一个装在你 Mac 上的本地 AI 健身教练。<strong>说一句想练什么,5 秒出一份完整计划</strong>(热身/主训练/冷身),然后全屏训练模式带你做。OpenAI 兼容或 Anthropic,带自己的 key。</p>
+        <div></div>
+        <p class="muted">完整 <strong class="mono">1,324</strong> 动作库,每动作配真人 GIF 演示、起承转合分阶段计时、组数次数休息都是大模型按动作组合给的。</p>
+        <div></div>
+        <p class="muted">训练计划存本地 SQLite,API key 只在 localStorage,<strong>永远不上传任何东西</strong>。</p>
+      </section>
+
+      <section class="stats">
+        {stats.map((s) => (
+          <div class="stat">
+            <p class="eyebrow stat__label">{s.label.toUpperCase()}</p>
+            <div class="stat__value display">{s.value}</div>
+          </div>
+        ))}
+      </section>
+
+      <section class="cta-band">
+        <p>想直接装上跑跑?下个 .app,双击即用,5 秒看到自己的第一份 AI 计划。</p>
+        <a class="btn btn--black" style="background:#f5efe6;color:#1a1a1a" href="https://github.com/young920/ritual/releases/latest" target="_blank" rel="noopener">
+          DOWNLOAD ↓
+        </a>
+      </section>
+
+      <section id="capabilities">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">它能做什么 · WHAT IT DOES</p>
+            <h2 class="display">三个面板,<br/>撑起一次完整训练。</h2>
+          </div>
+          <a class="mono" style="font-size:12px;letter-spacing:0.15em" href="https://github.com/young920/ritual#readme" target="_blank" rel="noopener">VIEW ON GITHUB ↗</a>
+        </div>
+        <div class="cards">
+          {capabilities.map((c) => (
+            <article class="card">
+              <p class="eyebrow">{c.eyebrow}</p>
+              <h3 class="display">{c.title}</h3>
+              <p>{c.body}</p>
+              <div class="line">
+                <span>FEATURE</span>
+                <a href="https://github.com/young920/ritual#readme" target="_blank" rel="noopener">↗</a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="screenshots">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">截图 · UI SNAPSHOTS</p>
+            <h2 class="display">主屏,生成屏,设置屏。</h2>
+          </div>
+          <a class="mono" style="font-size:12px;letter-spacing:0.15em" href="https://github.com/young920/ritual/tree/main/docs/screenshots" target="_blank" rel="noopener">VIEW ALL ↗</a>
+        </div>
+        <div class="shots">
+          <a class="shot" href="https://github.com/young920/ritual/blob/main/docs/screenshots/plan.png" target="_blank" rel="noopener">
+            <img src="/ritual/screenshots/plan.png" alt="Ritual 计划页" />
+          </a>
+          <a class="shot" href="https://github.com/young920/ritual/blob/main/docs/screenshots/generate.png" target="_blank" rel="noopener">
+            <img src="/ritual/screenshots/generate.png" alt="Ritual 生成页" />
+          </a>
+          <a class="shot" href="https://github.com/young920/ritual/blob/main/docs/screenshots/settings.png" target="_blank" rel="noopener">
+            <img src="/ritual/screenshots/settings.png" alt="Ritual 设置页" />
+          </a>
+        </div>
+      </section>
+
+      <section id="why" class="why">
+        <div class="why__text">
+          <p class="eyebrow">为什么选 Ritual · WHY RITUAL</p>
+          <h2 class="display">你不会想<br/>再开一个健身 app 了。</h2>
+          <div class="why__list">
+            {whyItems.map((w) => (
+              <div class="why__row">
+                <span class="why__check"></span>
+                <div>
+                  <h3>{w.h}</h3>
+                  <p>{w.p}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div class="why__photo">
+          <svg viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+            <defs>
+              <radialGradient id="spot" cx="50%" cy="30%">
+                <stop offset="0%" stop-color="#d96b3f" stop-opacity="1"/>
+                <stop offset="60%" stop-color="#a3421f" stop-opacity="1"/>
+                <stop offset="100%" stop-color="#5a2410" stop-opacity="1"/>
+              </radialGradient>
+              <pattern id="dot" patternUnits="userSpaceOnUse" width="6" height="6">
+                <circle cx="3" cy="3" r="0.6" fill="#000" opacity="0.18"/>
+              </pattern>
+            </defs>
+            <rect width="400" height="600" fill="url(#spot)"/>
+            <rect width="400" height="600" fill="url(#dot)"/>
+            <g fill="#1a1a1a" opacity="0.82">
+              <ellipse cx="200" cy="190" rx="40" ry="46"/>
+              <path d="M160 230 L150 360 L162 480 L182 480 L195 360 L205 360 L218 480 L238 480 L240 360 L245 230 Z"/>
+              <rect x="80" y="220" width="240" height="6" rx="2"/>
+              <circle cx="80" cy="223" r="20"/>
+              <circle cx="320" cy="223" r="20"/>
+              <circle cx="80" cy="223" r="9" fill="#a3421f"/>
+              <circle cx="320" cy="223" r="9" fill="#a3421f"/>
+            </g>
+            <ellipse cx="200" cy="0" rx="300" ry="180" fill="#fff" opacity="0.12"/>
+            <g font-family="ui-monospace, monospace" fill="#f5efe6" font-size="11" opacity="0.6" letter-spacing="0.2em">
+              <text x="20" y="40">PRACTICE · 2026</text>
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <section id="how">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">怎么用 · HOW IT WORKS</p>
+            <h2 class="display">四步,从下载到出汗。</h2>
+          </div>
+        </div>
+        <div class="steps">
+          {steps.map((s) => (
+            <div class="step">
+              <span class="step__n">{s.n}</span>
+              <div>
+                <h3 class="display">{s.h}</h3>
+                <p>{s.p}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="download" style="padding:80px 0 24px">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">下载 · DOWNLOAD</p>
+            <h2 class="display">macOS · Apple Silicon</h2>
+          </div>
+        </div>
+        <div class="cards" style="grid-template-columns: 1.2fr 1fr 1fr">
+          <a class="card" href="https://github.com/young920/ritual/releases/download/v0.2.0/Ritual-0.2.0-mac-arm64.dmg" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;background:#1a1a1a;color:#f5efe6">
+            <p class="eyebrow" style="color:#8a7e6e">推荐 · Apple M1–M4</p>
+            <h3 class="display" style="color:#f5efe6">Ritual-0.2.0.dmg</h3>
+            <p style="color:#cfc6b8">555 MB · 含 Python 3.11 + 所有依赖</p>
+            <div class="line" style="border-color:rgba(245,239,230,0.15);color:#8a7e6e">
+              <span>mac-arm64</span><span>↓ DOWNLOAD</span>
+            </div>
+          </a>
+          <a class="card" href="https://github.com/young920/ritual/releases/download/v0.2.0/ritual-macos.zip" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+            <p class="eyebrow">macOS · zip</p>
+            <h3 class="display">42 MB</h3>
+            <p class="muted">不含 Python 运行时,适合已有 Python 环境的</p>
+            <div class="line"><span>macOS ALL</span><span>↓</span></div>
+          </a>
+          <a class="card" href="https://github.com/young920/ritual/releases/download/v0.2.0/ritual-linux.tar.gz" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+            <p class="eyebrow">Linux · tar.gz</p>
+            <h3 class="display">57 MB</h3>
+            <p class="muted">需要本地装 Python 3.10+</p>
+            <div class="line"><span>LINUX</span><span>↓</span></div>
+          </a>
+        </div>
+      </section>
+
+      <section id="faq" style="padding:80px 0 24px">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">常见问题 · FAQ</p>
+            <h2 class="display">装之前的疑问。</h2>
+          </div>
+        </div>
+        <div class="faq">
+          {faqs.map((f) => (
+            <details>
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section style="margin-top:80px">
+        <div class="cta-band">
+          <p>macOS 上一个真·本地 AI 健身教练,GitHub 开源。</p>
+          <a class="btn" style="background:#f5efe6;color:#1a1a1a" href="https://github.com/young920/ritual" target="_blank" rel="noopener">
+            STAR ON GITHUB ↗
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="wrap">
+      <div class="muted">© 2026 Ritual · 本地 AI 健身教练 · Build {lastUpdated}</div>
+      <div class="links">
+        <a href="https://github.com/young920/ritual" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/young920/ritual/releases" target="_blank" rel="noopener">Releases</a>
+        <a href="https://github.com/young920/ritual/blob/main/README.md" target="_blank" rel="noopener">README</a>
+        <a href="https://github.com/young920/ritual/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+      </div>
+    </footer>
+  </body>
+</html>

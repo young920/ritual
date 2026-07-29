@@ -93,3 +93,8 @@ graphify-out/**
 
 # graphify 缓存产物
 graphify-out/cache/venv-ritual/
+
+# Astro landing page
+site/dist/
+site/node_modules/
+site/.astro/
