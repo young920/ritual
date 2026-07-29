@@ -103,7 +103,6 @@ async function createWindow() {
     minHeight: 640,
     title: 'Ritual',
     backgroundColor: '#1a1614',
-    titleBarStyle: 'hiddenInset',
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

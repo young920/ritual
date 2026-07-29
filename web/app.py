@@ -151,19 +151,21 @@ async def _unhandled_exception(request: Request, exc: Exception):
 
 @app.on_event("startup")
 def _startup_init_db():
-    """启动时初始化 SQLite schema + 自动开浏览器(PyInstaller .app 启动用)。"""
+    """启动时初始化 SQLite schema。自动开浏览器只在 Ritual.command 模式下做。"""
     _db.init_schema(_db.get_default_conn())
-    # .app 启动时(launchd,没有 shell)自动开浏览器
-    import threading
-    def _open_browser():
-        import time, subprocess
-        time.sleep(0.5)
-        try:
-            subprocess.Popen(["open", "http://127.0.0.1:8000/generate"],
-                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        except Exception:
-            pass
-    threading.Thread(target=_open_browser, daemon=True).start()
+    # Ritual.command 模式(命令行启动)自动开浏览器;Electron 模式下由 server/main.js
+    # 创建 BrowserWindow,不需要再开外部浏览器。
+    if not os.environ.get("RITUAL_BUNDLED"):
+        import threading
+        def _open_browser():
+            import time, subprocess
+            time.sleep(0.5)
+            try:
+                subprocess.Popen(["open", "http://127.0.0.1:8000/generate"],
+                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            except Exception:
+                pass
+        threading.Thread(target=_open_browser, daemon=True).start()
 
 _exercises_cache: list[dict] | None = None
 
