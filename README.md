@@ -4,6 +4,8 @@
 
 基于 [exercises-dataset](https://github.com/hasaneyldrm/exercises-dataset)(1,324 个动作,9 种语言)构建。
 
+👉 **产品主页**:[young920.github.io/ritual](https://young920.github.io/ritual/)
+
 ## 📸 截图
 
 | 计划页 | 生成页 | 设置页 |
