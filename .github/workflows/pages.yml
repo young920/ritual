@@ -24,13 +24,16 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: Install deps
         working-directory: site
-        run: npm install --no-audit --no-fund
+        run: npm install --no-audit --no-fund --omit=optional
+      - name: Add rolldown linux binding
+        working-directory: site
+        run: npm install @rolldown/binding-linux-x64-gnu --no-save --no-audit --no-fund || true
       - name: Build
         working-directory: site
-        run: npm run build
+        run: npm run build 2>&1 | tee build.log
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
