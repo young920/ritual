@@ -1,0 +1,63 @@
+appId: com.ritual.app
+productName: Ritual
+copyright: Copyright © 2026
+
+directories:
+  output: dist
+  buildResources: scripts
+
+files:
+  - server/**/*
+  - web/**/*
+  - cli/**/*
+  - data/exercises.json
+  - data/exercises.schema.json
+  - package.json
+  - node_modules/**/*
+  - "!node_modules/**/*.{md,ts,map}"
+  - "!node_modules/**/LICENSE*"
+  - "!node_modules/**/{README,readme}*"
+  - "!**/*.d.ts"
+
+asar: true
+
+# 关键:Ritual 的核心依赖都在 Python 这边(已存在的 .venv-ritual/),
+# 不能塞进 asar(Electron 不会解 Python 包)。
+# 整个 .venv-ritual/ 放到 Resources/ritual_runtime/,main.js 用 process.resourcesPath 找。
+extraResources:
+  - from: .
+    to: ritual_runtime
+    filter:
+      - "web/**/*"
+      - "cli/**/*"
+      - "data/exercises.json"
+      - "data/exercises.schema.json"
+      - ".venv-ritual/**/*"
+      - "scripts/logo.icns"
+      - "pyproject.toml"
+      - "requirements.txt"
+
+mac:
+  target:
+    - target: dmg
+  icon: ./scripts/logo.icns
+  category: public.app-category.healthcare-fitness
+  artifactName: ${productName}-${version}-mac-${arch}.${ext}
+  # 给未签名的开发者一个友好提示;正式发版要去 Apple Developer 签
+  gatekeeperAssess: false
+
+dmg:
+  writeUpdateInfo: false
+
+win:
+  target:
+    - target: dir
+  icon: ./scripts/logo.icns
+
+linux:
+  target:
+    - target: AppImage
+  icon: ./scripts/logo.icns
+  category: Health
+
+publish: null

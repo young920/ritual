@@ -55,6 +55,19 @@ dist/
 build/
 *.egg-info/
 
+# Node (Electron 打包)
+node_modules/
+package-lock.json
+.npm-cache-ritual/
+.electron-cache-ritual/
+.electron-builder-cache-ritual/
+
+# 临时图标源(已生成 logo.icns 后不再需要)
+scripts/icon.iconset/
+
+# Ritual Python venv(打包时由 build_app.sh 拷进 .app)
+.venv-ritual/
+
 # OS
 .DS_Store
 Thumbs.db

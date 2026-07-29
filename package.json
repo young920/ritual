@@ -1,0 +1,19 @@
+{
+  "name": "ritual",
+  "version": "0.2.0",
+  "description": "Ritual — AI 健身教练(本地 .app 包装)",
+  "author": "Ritual Developer",
+  "license": "MIT",
+  "main": "server/main.js",
+  "scripts": {
+    "dev": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:mac": "electron-builder --mac",
+    "lint": "node -e \"require('./server/main.js')\" --check"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  }
+}
