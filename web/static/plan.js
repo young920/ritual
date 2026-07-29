@@ -22,7 +22,13 @@
       const lsPlans = JSON.parse(localStorage.getItem('sport.plans') || '[]');
       if (!lsPlans.length) return;
       const existing = await fetch('/api/plans?include_archived=true').then(r => r.json());
-      if (existing.plans.length) return;
+      if (existing.plans.length) {
+        // DB 已有计划,LS 是历史残留(可能来自 Ritual.command / Chrome session 恢复)
+        // 直接清掉 LS,避免反复迁移。
+        localStorage.removeItem('sport.plans');
+        localStorage.removeItem('sport.current_plan_id');
+        return;
+      }
       const currentId = localStorage.getItem('sport.current_plan_id') || '';
       const resp = await fetch('/api/migrate', {
         method: 'POST',

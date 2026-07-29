@@ -29,6 +29,7 @@ except Exception:
 
 import hashlib
 import json as _json
+import os
 import subprocess
 import sys
 from pathlib import Path
