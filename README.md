@@ -4,6 +4,16 @@
 
 基于 [exercises-dataset](https://github.com/hasaneyldrm/exercises-dataset)(1,324 个动作,9 种语言)构建。
 
+## 📸 截图
+
+| 计划页 | 生成页 | 设置页 |
+| :---: | :---: | :---: |
+| ![](docs/screenshots/plan.png) | ![](docs/screenshots/generate.png) | ![](docs/screenshots/settings.png) |
+
+- **计划页** — 显示当前激活的训练计划,带 Day tabs、动作详情、训练进度
+- **生成页** — 输入自然语言意图("练胸/初学者"),可选目标肌/器械,大模型编排完整计划
+- **设置页** — API key、Base URL、模型名,只存 localStorage,不上传
+
 ## ✨ 它能做什么
 
 - **AI 编排计划**:告诉 AI 你想练什么(自然语言),自动生成 N 天训练计划,带热身/主训练/拉伸,每步带要点
@@ -28,6 +38,8 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 
 ### 2. 启动
 
+#### A. 命令行启动(开发 / 跨平台)
+
 ```bash
 # Mac / Linux
 ./start.sh
@@ -40,6 +52,22 @@ start.bat
 1. 用 uv 准备 Python 环境(无感)
 2. 装依赖(无感)
 3. 启 server,自动开浏览器到 `http://127.0.0.1:8000`
+
+#### B. 打包成 Mac .app(双击即用)
+
+```bash
+# 一次性:装 npm 依赖并下 Electron 二进制
+npm install --ignore-scripts --cache ~/.npm-cache-ritual --registry https://registry.npmmirror.com
+curl -L -o /tmp/electron.zip "https://github.com/electron/electron/releases/download/v33.4.11/electron-v33.4.11-darwin-arm64.zip"
+mkdir -p node_modules/electron/dist && cd node_modules/electron/dist && unzip -q /tmp/electron.zip
+printf '%s' 'Electron.app/Contents/MacOS/Electron' > ../path.txt
+
+# 打 .app
+./scripts/build_app.sh
+open dist/mac-arm64/Ritual.app
+```
+
+打包后 `dist/mac-arm64/Ritual.app`(1 GB,内含 Python 3.11 venv)双击启动,GUI + 后端一起起。
 
 ### 3. 填 API Key(一次就好)
 
